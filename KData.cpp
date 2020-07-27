@@ -1294,6 +1294,22 @@ bool KData::outputPercolator(FILE* f, KDatabase& db, kResults& r, int count){
   if(count>1) fprintf(f,"-%d",count);
   if(r.decoy) fprintf(f,"\t-1");
   else fprintf(f,"\t1");
+
+  // Add label for each peptide:
+  if(r.type==2 || r.type==3) {
+    if (r.scoreA>r.scoreB) {
+      if (r.decoy1) fprintf(f, "\t-1");
+      else fprintf(f, "\t1");
+      if (r.decoy2) fprintf(f, "\t-1");
+      else fprintf(f, "\t1");
+    } else {
+      if (r.decoy2) fprintf(f, "\t-1");
+      else fprintf(f, "\t1");
+      if (r.decoy1) fprintf(f, "\t-1");
+      else fprintf(f, "\t1");
+    }
+  }
+
   if(params->percVersion>2.04) fprintf(f,"\t%d",r.scanNumber);
   fprintf(f,"\t%.4lf",r.score);
   fprintf(f,"\t%.4lf",r.scoreDelta);
@@ -1573,8 +1589,8 @@ bool KData::outputResults(KDatabase& db, KParams& par){
   fprintf(fOut,"Scan Number\tRet Time\tObs Mass\tCharge\tPSM Mass\tPPM Error\tScore\tdScore\tE-value\tPeptide #1 Score\tPeptide #1 E-value\tPeptide #1\tLinked AA #1\tProtein #1\tProtein #1 Site\tPeptide #2 Score\tPeptide #2 E-value\tPeptide #2\tLinked AA #2\tProtein #2\tProtein #2 Site\tLinker Mass\n");
   if(params->exportPercolator){
     if(params->percVersion>2.04) {
-      fprintf(fIntra,"SpecId\tLabel\tscannr\tScore\tdScore\tnegLog10eVal\tnegLog10eValA\tnegLog10eValB\tIonMatch\tConIonMatch\tIonMatchA\tConIonMatchA\tIonMatchB\tConIonMatchB\t");
-      fprintf(fInter,"SpecId\tLabel\tscannr\tScore\tdScore\tnegLog10eVal\tnegLog10eValA\tnegLog10eValB\tIonMatch\tConIonMatch\tIonMatchA\tConIonMatchA\tIonMatchB\tConIonMatchB\t");
+      fprintf(fIntra,"SpecId\tLabel\tLabelA\tLabelB\tscannr\tScore\tdScore\tnegLog10eVal\tnegLog10eValA\tnegLog10eValB\tIonMatch\tConIonMatch\tIonMatchA\tConIonMatchA\tIonMatchB\tConIonMatchB\t");
+      fprintf(fInter,"SpecId\tLabel\tLabelA\tLabelB\tscannr\tScore\tdScore\tnegLog10eVal\tnegLog10eValA\tnegLog10eValB\tIonMatch\tConIonMatch\tIonMatchA\tConIonMatchA\tIonMatchB\tConIonMatchB\t");
       fprintf(fLoop,"SpecId\tLabel\tscannr\tScore\tdScore\tnegLog10eVal\tIonMatch\tConIonMatch\t");
       fprintf(fSingle,"SpecId\tLabel\tscannr\tScore\tdScore\tnegLog10eVal\tIonMatch\tConIonMatch\t");
       if (params->dimers) fprintf(fDimer, "SpecId\tLabel\tscannr\tScore\tdScore\tnegLog10eVal\t");
